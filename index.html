@@ -1,50 +1,120 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <title>WebLite Downloader</title>
   <style>
+    /* === General Styling === */
     body {
-      font-family: system-ui, Arial;
-      padding: 30px;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(160deg, #0b0c10, #1f2833);
+      color: #c5c6c7;
+      padding: 40px 20px;
       max-width: 600px;
       margin: auto;
-      background: #f7f9fc;
-      color: #333;
       text-align: center;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
+
+    /* === Header === */
     h2 {
-      color: #0078d7;
+      color: #66fcf1;
+      margin-bottom: 10px;
     }
+    p {
+      color: #45a29e;
+      margin-bottom: 25px;
+    }
+
+    /* === Input & Button === */
     input, button {
-      padding: 10px;
+      padding: 12px;
       font-size: 15px;
       width: 100%;
       box-sizing: border-box;
       margin-top: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+      transition: all 0.3s ease;
     }
+
+    input {
+      background: #1f2833;
+      color: #c5c6c7;
+      border: 1px solid #45a29e;
+    }
+
+    input:focus {
+      border-color: #66fcf1;
+      box-shadow: 0 0 8px #45a29e;
+    }
+
     button {
-      background-color: #0078d7;
-      color: white;
+      background-color: #45a29e;
+      color: #0b0c10;
+      font-weight: bold;
       cursor: pointer;
-      transition: background 0.2s;
+      
     }
+
     button:hover {
-      background-color: #005fa3;
+      background-color: #74e4dc;
     }
+
     #status {
-      margin-top: 15px;
+      margin-top: 20px;
       font-weight: 500;
+      color: #66fcf1;
+    }
+
+    /* === Footer === */
+    footer {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #45a29e;
+      border-top: 1px solid #1f2833;
+      padding-top: 15px;
+    }
+
+    footer a {
+      color: #66fcf1;
+      text-decoration: none;
+      margin: 0 8px;
+      transition: color 0.3s;
+    }
+
+    footer a:hover {
+      color: #ffffff;
+
+
+    h2 {
+      animation: glow 2s infinite alternate;
     }
   </style>
 </head>
+
 <body>
-  <h2>🎬 WebLite — Paste a Video Link</h2>
-  <input id="url" placeholder="https://example.com/video" />
-  <button id="dl">Download</button>
-  <div id="status"></div>
+  <main>
+    <h2>🎬 WebLite Downloader</h2>
+    <p>Paste a video link below to start downloading</p>
+
+    <input id="url" placeholder="https://example.com/video" />
+    <button id="dl">Download</button>
+    <div id="status"></div>
+  </main>
+
+  <footer>
+    <p>© 2025 WebLite | Built by Ce_phas </p>
+    <div>
+      <a href="https://github.com/Cephas-2/WebLite-Downloader-frnt" target="_blank">GitHub</a> •
+      <a href="https://wa.me/254727003182" target="_blank">WhatsApp</a>
+      <a href="mailto:yourmail@example.com">Email</a>
+    </div>
+  </footer>
 
   <script>
     const btn = document.getElementById('dl');
@@ -54,7 +124,7 @@
     btn.addEventListener('click', async () => {
       const url = urlEl.value.trim();
       if (!url) {
-        status.innerText = "⚠️ Please enter a URL.";
+        status.innerText = "⚠️ Please enter a video URL.";
         return;
       }
 
@@ -86,9 +156,9 @@
         a.click();
         a.remove();
 
-        status.innerText = "✅ Download started!";
+        status.innerText = " Download started!";
       } catch (err) {
-        status.innerText = "❌ Failed: " + err.message;
+        status.innerText = " Failed: " + err.message;
       }
     });
   </script>
