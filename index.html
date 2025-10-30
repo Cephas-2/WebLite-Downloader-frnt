@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>WebLite Downloader</title>
+  <style>
+    body {
+      font-family: system-ui, Arial;
+      padding: 30px;
+      max-width: 600px;
+      margin: auto;
+      background: #f7f9fc;
+      color: #333;
+      text-align: center;
+    }
+    h2 {
+      color: #0078d7;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 15px;
+      width: 100%;
+      box-sizing: border-box;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      background-color: #0078d7;
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button:hover {
+      background-color: #005fa3;
+    }
+    #status {
+      margin-top: 15px;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <h2>🎬 WebLite — Paste a Video Link</h2>
+  <input id="url" placeholder="https://example.com/video" />
+  <button id="dl">Download</button>
+  <div id="status"></div>
+
+  <script>
+    const btn = document.getElementById('dl');
+    const urlEl = document.getElementById('url');
+    const status = document.getElementById('status');
+
+    btn.addEventListener('click', async () => {
+      const url = urlEl.value.trim();
+      if (!url) {
+        status.innerText = "⚠️ Please enter a URL.";
+        return;
+      }
+
+      status.innerText = "⏳ Downloading... please wait.";
+
+      try {
+        const res = await fetch('/api/download', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url })
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({ error: res.statusText }));
+          status.innerText = "❌ Error: " + err.error;
+          return;
+        }
+
+        const blob = await res.blob();
+        const filename = res.headers
+          .get('content-disposition')
+          ?.split('filename=')[1]
+          ?.replace(/['"]/g, '') || 'video.mp4';
+
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+
+        status.innerText = "✅ Download started!";
+      } catch (err) {
+        status.innerText = "❌ Failed: " + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
