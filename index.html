@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <title>WebLite Downloader</title>
+
   <style>
     /* === General Styling === */
     body {
@@ -23,7 +24,9 @@
     h2 {
       color: #66fcf1;
       margin-bottom: 10px;
+      animation: glow 2s infinite alternate;
     }
+
     p {
       color: #45a29e;
       margin-bottom: 25px;
@@ -58,17 +61,22 @@
       color: #0b0c10;
       font-weight: bold;
       cursor: pointer;
-      
     }
 
-    button:hover {
+    button:hover:not(:disabled) {
       background-color: #74e4dc;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
 
     #status {
       margin-top: 20px;
       font-weight: 500;
       color: #66fcf1;
+      min-height: 22px;
     }
 
     /* === Footer === */
@@ -89,10 +97,11 @@
 
     footer a:hover {
       color: #ffffff;
+    }
 
-
-    h2 {
-      animation: glow 2s infinite alternate;
+    @keyframes glow {
+      from { text-shadow: 0 0 5px #45a29e; }
+      to { text-shadow: 0 0 15px #66fcf1; }
     }
   </style>
 </head>
@@ -104,63 +113,75 @@
 
     <input id="url" placeholder="https://example.com/video" />
     <button id="dl">Download</button>
+
     <div id="status"></div>
   </main>
 
   <footer>
-    <p>© 2025 WebLite | Built by Ce_phas </p>
+    <p>© 2025 WebLite | Built by Ce_phas</p>
     <div>
       <a href="https://github.com/Cephas-2/WebLite-Downloader-frnt" target="_blank">GitHub</a> •
-      <a href="https://wa.me/254727003182" target="_blank">WhatsApp</a>
+      <a href="https://wa.me/254727003182" target="_blank">WhatsApp</a> •
       <a href="mailto:yourmail@example.com">Email</a>
     </div>
   </footer>
 
   <script>
-    const btn = document.getElementById('dl');
-    const urlEl = document.getElementById('url');
-    const status = document.getElementById('status');
+    const API_BASE = "https://Cephmod.pythonanywhere.com";
 
-    btn.addEventListener('click', async () => {
+    const btn = document.getElementById("dl");
+    const urlEl = document.getElementById("url");
+    const status = document.getElementById("status");
+
+    btn.addEventListener("click", async () => {
       const url = urlEl.value.trim();
+
       if (!url) {
         status.innerText = "⚠️ Please enter a video URL.";
         return;
       }
 
-      status.innerText = "⏳ Downloading... please wait.";
+      btn.disabled = true;
+      status.innerText = "⏳ Downloading… please wait.";
 
       try {
-        const res = await fetch('/api/download', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        const res = await fetch(`${API_BASE}/api/download`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify({ url })
         });
 
         if (!res.ok) {
-          const err = await res.json().catch(() => ({ error: res.statusText }));
-          status.innerText = "❌ Error: " + err.error;
-          return;
+          const err = await res.json().catch(() => ({
+            error: res.statusText
+          }));
+          throw new Error(err.error);
         }
 
         const blob = await res.blob();
-        const filename = res.headers
-          .get('content-disposition')
-          ?.split('filename=')[1]
-          ?.replace(/['"]/g, '') || 'video.mp4';
+        const filename =
+          res.headers
+            .get("content-disposition")
+            ?.split("filename=")[1]
+            ?.replace(/['"]/g, "") || "video.mp4";
 
-        const a = document.createElement('a');
+        const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
         a.download = filename;
         document.body.appendChild(a);
         a.click();
         a.remove();
 
-        status.innerText = " Download started!";
+        status.innerText = "✅ Download started!";
       } catch (err) {
-        status.innerText = " Failed: " + err.message;
+        status.innerText = "❌ Failed: " + err.message;
+      } finally {
+        btn.disabled = false;
       }
     });
   </script>
 </body>
 </html>
+
